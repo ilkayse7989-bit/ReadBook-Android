@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileChooserCallback;
     private RewardedAd rewardedAd;
     private boolean isLoadingRewardedAd;
+    private boolean showRewardedAdWhenReady;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,12 +131,17 @@ public class MainActivity extends Activity {
                         isLoadingRewardedAd = false;
                         rewardedAd = ad;
                         notifyWeb("readbook:rewarded-ready", "{}" );
+                        if (showRewardedAdWhenReady) {
+                            showRewardedAdWhenReady = false;
+                            showRewardedAd();
+                        }
                     }
 
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError error) {
                         isLoadingRewardedAd = false;
                         rewardedAd = null;
+                        showRewardedAdWhenReady = false;
                         Log.w(TAG, "Rewarded ad failed to load: " + error.getMessage());
                         notifyWeb("readbook:rewarded-unavailable", "{}" );
                     }
@@ -144,7 +150,8 @@ public class MainActivity extends Activity {
 
     private void showRewardedAd() {
         if (rewardedAd == null) {
-            notifyWeb("readbook:rewarded-unavailable", "{}" );
+            showRewardedAdWhenReady = true;
+            notifyWeb("readbook:rewarded-loading", "{}" );
             loadRewardedAd();
             return;
         }

@@ -11,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ReadBook"
         android:usesCleartextTraffic="false">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2195815120748412~8898007304" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,7 +1,6 @@
 package com.readbook.app;
 
 import android.app.Activity;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,8 +27,6 @@ public class MainActivity extends Activity {
     private static final String READBOOK_URL = "https://bolum-okuma.ilkayse7989.chatgpt.site";
     private static final String PRODUCTION_REWARDED_AD_UNIT_ID =
             "ca-app-pub-2195815120748412/9636373902";
-    private static final String TEST_REWARDED_AD_UNIT_ID =
-            "ca-app-pub-3940256099942544/5224354917";
 
     private WebView webView;
     private RewardedAd rewardedAd;
@@ -71,8 +68,7 @@ public class MainActivity extends Activity {
     }
 
     private String getRewardedAdUnitId() {
-        boolean isDebuggable = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        return isDebuggable ? TEST_REWARDED_AD_UNIT_ID : PRODUCTION_REWARDED_AD_UNIT_ID;
+        return PRODUCTION_REWARDED_AD_UNIT_ID;
     }
 
     private void loadRewardedAd() {

@@ -1,12 +1,17 @@
 package com.readbook.app;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -24,11 +29,13 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 public class MainActivity extends Activity {
     private static final String TAG = "ReadBookAds";
+    private static final int FILE_CHOOSER_REQUEST_CODE = 1001;
     private static final String READBOOK_URL = "https://bolum-okuma.ilkayse7989.chatgpt.site";
     private static final String PRODUCTION_REWARDED_AD_UNIT_ID =
             "ca-app-pub-2195815120748412/9636373902";
 
     private WebView webView;
+    private ValueCallback<Uri[]> fileChooserCallback;
     private RewardedAd rewardedAd;
     private boolean isLoadingRewardedAd;
 
@@ -55,6 +62,29 @@ public class MainActivity extends Activity {
         cookies.setAcceptThirdPartyCookies(webView, true);
 
         webView.setWebViewClient(new WebViewClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(
+                    WebView webView,
+                    ValueCallback<Uri[]> filePathCallback,
+                    FileChooserParams fileChooserParams) {
+                if (fileChooserCallback != null) {
+                    fileChooserCallback.onReceiveValue(null);
+                }
+                fileChooserCallback = filePathCallback;
+
+                try {
+                    Intent chooserIntent = fileChooserParams.createIntent();
+                    chooserIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    chooserIntent.setType("image/*");
+                    startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST_CODE);
+                    return true;
+                } catch (ActivityNotFoundException error) {
+                    fileChooserCallback = null;
+                    return false;
+                }
+            }
+        });
         webView.addJavascriptInterface(new AdsBridge(), "ReadBookAds");
         setContentView(webView);
 
@@ -65,6 +95,19 @@ public class MainActivity extends Activity {
         } else {
             webView.restoreState(savedInstanceState);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
+            if (fileChooserCallback != null) {
+                Uri[] result = WebChromeClient.FileChooserParams.parseResult(resultCode, data);
+                fileChooserCallback.onReceiveValue(result);
+                fileChooserCallback = null;
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private String getRewardedAdUnitId() {

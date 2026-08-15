@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST_CODE = 1001;
-    private static final String READBOOK_URL = "https://bolum-okuma.ilkayse7989.chatgpt.site";
+    private static final String READBOOK_URL = "https://readbook-web.ilkayse7989.workers.dev";
 
     private WebView webView;
     private ValueCallback<Uri[]> fileChooserCallback;
@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setUserAgentString(settings.getUserAgentString() + " ReadBookAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " ReadBookAndroid/1.2");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
